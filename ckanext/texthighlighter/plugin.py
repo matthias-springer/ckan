@@ -24,7 +24,7 @@ class TextHighlighter(p.SingletonPlugin):
     p.implements(p.IConfigurable, inherit=True)
     p.implements(p.IResourcePreview, inherit=True)
 
-    JSON_FORMATS = ['json', 'xml']
+    FORMATS = ['json', 'xml', 'rdf', 'text/plain', 'txt']
     JSONP_FORMATS = ['jsonp']
     proxy_is_enabled = False
 
@@ -44,7 +44,7 @@ class TextHighlighter(p.SingletonPlugin):
         format_lower = resource['format'].lower()
         if format_lower in self.JSONP_FORMATS:
             return True
-        elif format_lower in self.JSON_FORMATS and (self.proxy_is_enabled or resource['on_same_domain']):
+        elif format_lower in self.FORMATS and (self.proxy_is_enabled or resource['on_same_domain']):
             return True
         return False
 
@@ -52,7 +52,7 @@ class TextHighlighter(p.SingletonPlugin):
         assert self.can_preview(data_dict)
         resource = data_dict['resource']
         format_lower = resource['format'].lower()
-        if format_lower in self.JSON_FORMATS and self.proxy_is_enabled and not resource['on_same_domain']:
+        if format_lower in self.FORMATS and self.proxy_is_enabled and not resource['on_same_domain']:
             p.toolkit.c.resource['url'] = proxy.get_proxified_resource_url(data_dict)
 
     def preview_template(self, context, data_dict):

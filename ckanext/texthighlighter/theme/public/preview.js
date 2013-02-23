@@ -8,27 +8,49 @@ ckan.module('texthighlighter', function (jQuery, _) {
     },
     initialize: function () {
       var parameters = {
-		  JSON: {
+		  json: {
 			  contentType: 'application/json', 
 			  language: 'json', 
 			  dataConverter: function (data) { return JSON.stringify(data, null, 2); }, 
 			  dataType: 'json'},
-		  XML: {
+		  jsonp: {
+			  contentType: 'application/javascript',
+			  language: 'javascript',
+			  dataType: 'jsonp'
+		  },
+		  xml: {
 			  contentType: 'text/xml',
 			  language: 'xml',
-			  dataConverter: function (data) { return data; },
+			  dataType: 'text'},
+		  txt: {
+			  contentType: 'text/plain',
+			  language: '',
 			  dataType: 'text'}
-		  };
+	      };
 
 	  var self = this;
-	  var p = parameters[preload_resource['format']];
+
+	  parameters['text/plain'] = parameters.txt;
+	  parameters['rdf'] = parameters.xml;
+
+	  var p = parameters[preload_resource['format'].toLowerCase()];
 
       jQuery.ajax(preload_resource['url'], {
         type: 'GET',
         async: false,
 		dataType: p.dataType,
         success: function(data, textStatus, jqXHR) {
-	   	  self.el.html(hljs.highlightAuto(p.dataConverter(data)).value);
+	   	  var data = p.dataConverter ? p.dataConverter(data) : data;
+		  var highlighted;
+
+		  if (p.language) {
+			highlighted = hljs.highlight(p.language, data, true).value;
+		  }
+		  else {
+			highlighted = '<pre>' + data + '</pre>';
+		  }
+
+		  self.el.html(highlighted);
         },
         error: function(jqXHR, textStatus, errorThrown) {
           self.el.html(self.i18n('error', {text: textStatus, error: errorThrown}));
