@@ -8,7 +8,7 @@ import ckan.model as model
 import ckan.tests as tests
 import ckan.plugins as plugins
 import ckan.lib.helpers as h
-import ckanext.jsonpreview.plugin as previewplugin
+import ckanext.texthighlighter.plugin as previewplugin
 from ckan.lib.create_test_data import CreateTestData
 from ckan.config.middleware import make_app
 
@@ -85,7 +85,7 @@ class TestJsonPreview(tests.WsgiAppCase):
         assert result.status == 200, result.status
         assert 'preview_json.min.js' in result.body, result.body
         assert 'preload_resource' in result.body, result.body
-        assert 'data-module="jsonpreview"' in result.body, result.body
+        assert 'data-module="texthighlighter"' in result.body, result.body
 
     def test_iframe_is_shown(self):
         url = h.url_for(controller='package', action='resource_read', id=self.package.name, resource_id=self.resource['id'])
